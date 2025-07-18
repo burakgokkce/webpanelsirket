@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Günlük Takip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white shadow-md md:w-64 w-full md:min-h-screen md:fixed">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h1 class="text-xl font-bold text-gray-800">Yönetim Paneli</h1>
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="sidebarMenu" class="md:block">
+                <nav class="mt-4">
+                    <ul>
+                        <li>
+                            <a href="dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-home w-6"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="teams.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-users w-6"></i>
+                                <span>Ekip Listesi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tasks.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-tasks w-6"></i>
+                                <span>Görev Yönetimi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="daily-logs.html" class="flex items-center px-4 py-3 bg-blue-50 text-blue-700 border-l-4 border-blue-700">
+                                <i class="fas fa-calendar-day w-6"></i>
+                                <span>Günlük Takip</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="announcements.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-bullhorn w-6"></i>
+                                <span>Duyurular</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt w-6"></i>
+                                <span>Çıkış</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 flex-1 p-4 md:p-8">
+            <div class="mb-6 flex flex-wrap items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Günlük Takip</h1>
+                    <p class="text-gray-600">Ekip üyelerinin günlük çalışma kayıtları</p>
+                </div>
+                <button id="addLogBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm flex items-center mt-2 md:mt-0">
+                    <i class="fas fa-plus mr-2"></i> Yeni Kayıt
+                </button>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="card bg-white rounded-lg shadow-md mb-6 p-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div class="w-full">
+                        <label for="dateFilter" class="block text-sm font-medium text-gray-700 mb-1">Tarih Filtresi</label>
+                        <input type="date" id="dateFilter" class="form-input w-full">
+                    </div>
+                    <div class="w-full">
+                        <label for="userFilter" class="block text-sm font-medium text-gray-700 mb-1">Ekip Üyesi</label>
+                        <select id="userFilter" class="form-select w-full text-base">
+                            <option value="">Tümü</option>
+                            <!-- Team members will be populated here by JS -->
+                        </select>
+                    </div>
+                    <div class="flex justify-end w-full">
+                        <button id="applyFilterBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm">
+                            Filtrele
+                        </button>
+                        <button id="resetFilterBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md shadow-sm ml-3">
+                            Sıfırla
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Logs -->
+            <div class="space-y-4" id="dailyLogsContainer">
+                <!-- Daily logs will be populated here by JS -->
+                <p class="text-gray-500 italic text-center py-8" id="noLogsMessage">Henüz günlük kayıt bulunmuyor.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Log Modal -->
+    <div id="logModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold" id="modalTitle">Günlük Kayıt Ekle</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="logForm">
+                <input type="hidden" id="logId">
+                <div class="mb-4">
+                    <label for="logUser" class="form-label">Ekip Üyesi</label>
+                    <select id="logUser" class="form-select" required>
+                        <option value="">Seçiniz</option>
+                        <!-- Team members will be populated here by JS -->
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="logDate" class="form-label">Tarih</label>
+                    <input type="date" id="logDate" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="logContent" class="form-label">Yapılan İşler</label>
+                    <textarea id="logContent" class="form-input" rows="5" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="btn-secondary">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar on mobile
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Initialize data
+            loadDailyLogs();
+            loadTeamMembersForSelects();
+
+            // Set today's date as default for filter and new logs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateFilter').value = today;
+
+            // Modal handling
+            const logModal = document.getElementById('logModal');
+            const addLogBtn = document.getElementById('addLogBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const logForm = document.getElementById('logForm');
+            
+            // Open modal for adding new log
+            addLogBtn.addEventListener('click', function() {
+                document.getElementById('modalTitle').textContent = 'Günlük Kayıt Ekle';
+                logForm.reset();
+                document.getElementById('logId').value = '';
+                document.getElementById('logDate').value = today;
+                logModal.classList.remove('hidden');
+            });
+
+            // Close modal
+            function closeModal() {
+                logModal.classList.add('hidden');
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            logModal.addEventListener('click', function(e) {
+                if (e.target === logModal) {
+                    closeModal();
+                }
+            });
+
+            // Form submission
+            logForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const logData = {
+                    user: document.getElementById('logUser').value,
+                    date: document.getElementById('logDate').value,
+                    content: document.getElementById('logContent').value
+                };
+                
+                addDailyLog(logData);
+                closeModal();
+                loadDailyLogs();
+            });
+
+            // Filter handling
+            document.getElementById('applyFilterBtn').addEventListener('click', function() {
+                applyFilters();
+            });
+
+            document.getElementById('resetFilterBtn').addEventListener('click', function() {
+                document.getElementById('dateFilter').value = today;
+                document.getElementById('userFilter').value = '';
+                loadDailyLogs();
+            });
+        });
+
+        // Load daily logs with optional filters
+        function loadDailyLogs() {
+            const container = document.getElementById('dailyLogsContainer');
+            const noLogsMessage = document.getElementById('noLogsMessage');
+            const logs = getDailyLogs();
+            
+            // Clear container except for the no logs message
+            container.innerHTML = '';
+            container.appendChild(noLogsMessage);
+            
+            if (logs.length === 0) {
+                noLogsMessage.classList.remove('hidden');
+                return;
+            } else {
+                noLogsMessage.classList.add('hidden');
+            }
+            
+            // Group logs by date
+            const logsByDate = {};
+            logs.forEach(log => {
+                if (!logsByDate[log.date]) {
+                    logsByDate[log.date] = [];
+                }
+                logsByDate[log.date].push(log);
+            });
+            
+            // Sort dates in descending order (newest first)
+            const sortedDates = Object.keys(logsByDate).sort((a, b) => new Date(b) - new Date(a));
+            
+            sortedDates.forEach(date => {
+                const dateSection = document.createElement('div');
+                dateSection.className = 'card bg-white rounded-lg shadow-md mb-4';
+                
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'bg-gray-50 px-6 py-3 border-b';
+                dateHeader.innerHTML = `
+                    <h3 class="text-lg font-medium text-gray-800">${formatDate(date)}</h3>
+                `;
+                
+                const logsContainer = document.createElement('div');
+                logsContainer.className = 'divide-y divide-gray-200';
+                
+                logsByDate[date].forEach(log => {
+                    const logItem = document.createElement('div');
+                    logItem.className = 'p-6';
+                    logItem.innerHTML = `
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-800">${log.user}</h4>
+                        </div>
+                        <div class="pl-12">
+                            <p class="text-gray-700 whitespace-pre-line">${log.content}</p>
+                        </div>
+                    `;
+                    logsContainer.appendChild(logItem);
+                });
+                
+                dateSection.appendChild(dateHeader);
+                dateSection.appendChild(logsContainer);
+                container.appendChild(dateSection);
+            });
+        }
+
+        // Apply filters to daily logs
+        function applyFilters() {
+            const dateFilter = document.getElementById('dateFilter').value;
+            const userFilter = document.getElementById('userFilter').value;
+            const container = document.getElementById('dailyLogsContainer');
+            const noLogsMessage = document.getElementById('noLogsMessage');
+            
+            let logs = getDailyLogs();
+            
+            // Apply date filter if selected
+            if (dateFilter) {
+                logs = logs.filter(log => log.date === dateFilter);
+            }
+            
+            // Apply user filter if selected
+            if (userFilter) {
+                logs = logs.filter(log => log.user === userFilter);
+            }
+            
+            // Clear container except for the no logs message
+            container.innerHTML = '';
+            container.appendChild(noLogsMessage);
+            
+            if (logs.length === 0) {
+                noLogsMessage.classList.remove('hidden');
+                noLogsMessage.textContent = 'Seçilen filtrelere uygun kayıt bulunmuyor.';
+                return;
+            } else {
+                noLogsMessage.classList.add('hidden');
+            }
+            
+            // Group logs by date
+            const logsByDate = {};
+            logs.forEach(log => {
+                if (!logsByDate[log.date]) {
+                    logsByDate[log.date] = [];
+                }
+                logsByDate[log.date].push(log);
+            });
+            
+            // Sort dates in descending order (newest first)
+            const sortedDates = Object.keys(logsByDate).sort((a, b) => new Date(b) - new Date(a));
+            
+            sortedDates.forEach(date => {
+                const dateSection = document.createElement('div');
+                dateSection.className = 'card bg-white rounded-lg shadow-md mb-4';
+                
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'bg-gray-50 px-6 py-3 border-b';
+                dateHeader.innerHTML = `
+                    <h3 class="text-lg font-medium text-gray-800">${formatDate(date)}</h3>
+                `;
+                
+                const logsContainer = document.createElement('div');
+                logsContainer.className = 'divide-y divide-gray-200';
+                
+                logsByDate[date].forEach(log => {
+                    const logItem = document.createElement('div');
+                    logItem.className = 'p-6';
+                    logItem.innerHTML = `
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-800">${log.user}</h4>
+                        </div>
+                        <div class="pl-12">
+                            <p class="text-gray-700 whitespace-pre-line">${log.content}</p>
+                        </div>
+                    `;
+                    logsContainer.appendChild(logItem);
+                });
+                
+                dateSection.appendChild(dateHeader);
+                dateSection.appendChild(logsContainer);
+                container.appendChild(dateSection);
+            });
+        }
+
+        // Load team members for select dropdowns
+        function loadTeamMembersForSelects() {
+            const userFilter = document.getElementById('userFilter');
+            const logUser = document.getElementById('logUser');
+            const teams = getTeams();
+            
+            // Clear existing options except the first one
+            userFilter.innerHTML = '<option value="">Tümü</option>';
+            logUser.innerHTML = '<option value="">Seçiniz</option>';
+            
+            // Add all team members to filters
+            teams.forEach(member => {
+                const filterOption = document.createElement('option');
+                filterOption.value = member.name;
+                filterOption.textContent = member.name;
+                userFilter.appendChild(filterOption);
+                
+                const logOption = document.createElement('option');
+                logOption.value = member.name;
+                logOption.textContent = member.name;
+                logUser.appendChild(logOption);
+            });
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            return new Date(dateString).toLocaleDateString('tr-TR', options);
+        }
+    </script>
+</body>
+</html>

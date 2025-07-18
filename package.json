@@ -1,0 +1,39 @@
+{
+  "name": "webpanel",
+  "version": "1.0.0",
+  "description": "Modern ve kullanımı kolay yönetim paneli",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "start": "react-scripts start",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "keywords": [
+    "yönetim paneli",
+    "admin",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^4.4.0",
+    "react-scripts": "5.0.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

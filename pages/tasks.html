@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Görev Yönetimi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white shadow-md md:w-64 w-full md:min-h-screen md:fixed">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h1 class="text-xl font-bold text-gray-800">Yönetim Paneli</h1>
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="sidebarMenu" class="md:block">
+                <nav class="mt-4">
+                    <ul>
+                        <li>
+                            <a href="dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-home w-6"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="teams.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-users w-6"></i>
+                                <span>Ekip Listesi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tasks.html" class="flex items-center px-4 py-3 bg-blue-50 text-blue-700 border-l-4 border-blue-700">
+                                <i class="fas fa-tasks w-6"></i>
+                                <span>Görev Yönetimi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="daily-logs.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-calendar-day w-6"></i>
+                                <span>Günlük Takip</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="announcements.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-bullhorn w-6"></i>
+                                <span>Duyurular</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt w-6"></i>
+                                <span>Çıkış</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 flex-1 p-4 md:p-8">
+            <div class="mb-6 flex flex-wrap items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Görev Yönetimi</h1>
+                    <p class="text-gray-600">Görevleri oluşturun, görüntüleyin ve yönetin</p>
+                </div>
+                <button id="addTaskBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm flex items-center mt-2 md:mt-0">
+                    <i class="fas fa-plus mr-2"></i> Yeni Görev
+                </button>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="card bg-white rounded-lg shadow-md mb-6 p-4">
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn btn-sm px-4 py-2 rounded-full bg-blue-600 text-white" data-filter="all">
+                        Tümü
+                    </button>
+                    <button class="filter-btn btn-sm px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-filter="Bekliyor">
+                        Bekliyor
+                    </button>
+                    <button class="filter-btn btn-sm px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-filter="Yapılıyor">
+                        Yapılıyor
+                    </button>
+                    <button class="filter-btn btn-sm px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-filter="Bitti">
+                        Bitti
+                    </button>
+                </div>
+            </div>
+
+            <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                <!-- Task List Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Açıklama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sorumlu</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Tasks will be populated here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Task Modal -->
+    <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold" id="modalTitle">Görev Ekle</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                <div class="mb-4">
+                    <label for="taskName" class="form-label">Ad</label>
+                    <input type="text" id="taskName" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="taskDescription" class="form-label">Açıklama</label>
+                    <textarea id="taskDescription" class="form-input" rows="3" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="taskAssignee" class="form-label">Sorumlu</label>
+                    <select id="taskAssignee" class="form-select" required>
+                        <option value="">Seçiniz</option>
+                        <!-- Team members will be populated here by JS -->
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="taskDueDate" class="form-label">Tarih</label>
+                    <input type="date" id="taskDueDate" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="taskStatus" class="form-label">Durum</label>
+                    <select id="taskStatus" class="form-select" required>
+                        <option value="Bekliyor">Bekliyor</option>
+                        <option value="Yapılıyor">Yapılıyor</option>
+                        <option value="Bitti">Bitti</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="btn-secondary">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar on mobile
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Initialize task data and filter buttons
+            loadTasks();
+            setupFilterButtons();
+            loadTeamMembersForSelect();
+
+            // Modal handling
+            const taskModal = document.getElementById('taskModal');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const taskForm = document.getElementById('taskForm');
+            const modalTitle = document.getElementById('modalTitle');
+
+            // Open modal for adding new task
+            addTaskBtn.addEventListener('click', function() {
+                modalTitle.textContent = 'Görev Ekle';
+                taskForm.reset();
+                document.getElementById('taskId').value = '';
+                
+                // Set today as default date
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('taskDueDate').value = today;
+                
+                taskModal.classList.remove('hidden');
+            });
+
+            // Close modal
+            function closeModal() {
+                taskModal.classList.add('hidden');
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            taskModal.addEventListener('click', function(e) {
+                if (e.target === taskModal) {
+                    closeModal();
+                }
+            });
+
+            // Form submission
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('taskId').value;
+                const taskData = {
+                    name: document.getElementById('taskName').value,
+                    description: document.getElementById('taskDescription').value,
+                    assignedTo: document.getElementById('taskAssignee').value,
+                    dueDate: document.getElementById('taskDueDate').value,
+                    status: document.getElementById('taskStatus').value
+                };
+                
+                if (id) {
+                    // Update existing task
+                    updateTask(parseInt(id), taskData);
+                } else {
+                    // Add new task
+                    addTask(taskData);
+                }
+                
+                closeModal();
+                loadTasks();
+            });
+        });
+
+        // Load tasks into the table with optional filter
+        function loadTasks(filter = 'all') {
+            const tableBody = document.getElementById('taskTableBody');
+            let tasks;
+            
+            if (filter === 'all') {
+                tasks = getTasks();
+            } else {
+                tasks = getTasksByStatus(filter);
+            }
+            
+            tableBody.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500 italic">
+                            ${filter === 'all' ? 'Henüz görev bulunmuyor.' : `"${filter}" durumunda görev bulunmuyor.`}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tasks.forEach(task => {
+                let statusBadge;
+                
+                switch (task.status) {
+                    case 'Bekliyor':
+                        statusBadge = '<span class="badge status-waiting">Bekliyor</span>';
+                        break;
+                    case 'Yapılıyor':
+                        statusBadge = '<span class="badge status-inprogress">Yapılıyor</span>';
+                        break;
+                    case 'Bitti':
+                        statusBadge = '<span class="badge status-completed">Bitti</span>';
+                        break;
+                    default:
+                        statusBadge = '<span class="badge badge-gray">Belirsiz</span>';
+                }
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="font-medium text-gray-900">${task.name}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                            ${task.description}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${task.assignedTo}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${formatDate(task.dueDate)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            ${statusBadge}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <button onclick="editTask(${task.id})" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteTaskItem(${task.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Setup filter buttons
+        function setupFilterButtons() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-600', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    this.classList.add('bg-blue-600', 'text-white');
+                    
+                    // Filter tasks
+                    const filter = this.getAttribute('data-filter');
+                    loadTasks(filter);
+                });
+            });
+        }
+
+        // Load team members for select dropdown
+        function loadTeamMembersForSelect() {
+            const selectElement = document.getElementById('taskAssignee');
+            const teams = getTeams();
+            
+            // Clear existing options except the first one
+            selectElement.innerHTML = '<option value="">Seçiniz</option>';
+            
+            // Add active team members to select
+            teams.filter(member => member.isActive).forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.name;
+                option.textContent = member.name;
+                selectElement.appendChild(option);
+            });
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('tr-TR', options);
+        }
+
+        // Edit task
+        function editTask(id) {
+            const task = getTask(id);
+            if (!task) return;
+            
+            document.getElementById('modalTitle').textContent = 'Görev Düzenle';
+            document.getElementById('taskId').value = task.id;
+            document.getElementById('taskName').value = task.name;
+            document.getElementById('taskDescription').value = task.description;
+            document.getElementById('taskAssignee').value = task.assignedTo;
+            document.getElementById('taskDueDate').value = task.dueDate;
+            document.getElementById('taskStatus').value = task.status;
+            
+            document.getElementById('taskModal').classList.remove('hidden');
+        }
+
+        // Delete task confirmation
+        function deleteTaskItem(id) {
+            if (confirm('Bu görevi silmek istediğinize emin misiniz?')) {
+                deleteTask(id);
+                loadTasks();
+            }
+        }
+    </script>
+</body>
+</html>

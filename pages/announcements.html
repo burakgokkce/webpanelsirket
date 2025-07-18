@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Duyurular</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white shadow-md md:w-64 w-full md:min-h-screen md:fixed">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h1 class="text-xl font-bold text-gray-800">Yönetim Paneli</h1>
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="sidebarMenu" class="md:block">
+                <nav class="mt-4">
+                    <ul>
+                        <li>
+                            <a href="dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-home w-6"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="teams.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-users w-6"></i>
+                                <span>Ekip Listesi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tasks.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-tasks w-6"></i>
+                                <span>Görev Yönetimi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="daily-logs.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-calendar-day w-6"></i>
+                                <span>Günlük Takip</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="announcements.html" class="flex items-center px-4 py-3 bg-blue-50 text-blue-700 border-l-4 border-blue-700">
+                                <i class="fas fa-bullhorn w-6"></i>
+                                <span>Duyurular</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt w-6"></i>
+                                <span>Çıkış</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 flex-1 p-4 md:p-8">
+            <div class="mb-6 flex flex-wrap items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Duyurular</h1>
+                    <p class="text-gray-600">Tüm ekip için duyuruları yönetin</p>
+                </div>
+                <button id="addAnnouncementBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm flex items-center mt-2 md:mt-0">
+                    <i class="fas fa-plus mr-2"></i> Yeni Duyuru
+                </button>
+            </div>
+
+            <!-- Announcements List -->
+            <div class="space-y-4" id="announcementsContainer">
+                <!-- Announcements will be populated here by JS -->
+                <p class="text-gray-500 italic text-center py-8" id="noAnnouncementsMessage">Henüz duyuru bulunmuyor.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Announcement Modal -->
+    <div id="announcementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold" id="modalTitle">Duyuru Ekle</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="announcementForm">
+                <input type="hidden" id="announcementId">
+                <div class="mb-4">
+                    <label for="announcementTitle" class="form-label">Başlık</label>
+                    <input type="text" id="announcementTitle" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="announcementContent" class="form-label">İçerik</label>
+                    <textarea id="announcementContent" class="form-input" rows="6" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="announcementDate" class="form-label">Tarih</label>
+                    <input type="date" id="announcementDate" class="form-input" required>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="btn-secondary">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Announcement Modal -->
+    <div id="viewAnnouncementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold" id="viewModalTitle">Duyuru Detayı</h3>
+                <button id="closeViewModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-2" id="viewAnnouncementTitle"></h2>
+                <p class="text-sm text-gray-500 mb-4" id="viewAnnouncementDate"></p>
+                <div class="prose max-w-none text-gray-700" id="viewAnnouncementContent"></div>
+            </div>
+            <div class="flex justify-end">
+                <button id="closeViewBtn" class="btn-secondary">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar on mobile
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Initialize announcement data
+            loadAnnouncements();
+
+            // Modal handling for add/edit
+            const announcementModal = document.getElementById('announcementModal');
+            const addAnnouncementBtn = document.getElementById('addAnnouncementBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const announcementForm = document.getElementById('announcementForm');
+            const modalTitle = document.getElementById('modalTitle');
+
+            // Modal handling for viewing
+            const viewAnnouncementModal = document.getElementById('viewAnnouncementModal');
+            const closeViewModalBtn = document.getElementById('closeViewModalBtn');
+            const closeViewBtn = document.getElementById('closeViewBtn');
+
+            // Open modal for adding new announcement
+            addAnnouncementBtn.addEventListener('click', function() {
+                modalTitle.textContent = 'Duyuru Ekle';
+                announcementForm.reset();
+                document.getElementById('announcementId').value = '';
+                
+                // Set today as default date
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('announcementDate').value = today;
+                
+                announcementModal.classList.remove('hidden');
+            });
+
+            // Close add/edit modal
+            function closeModal() {
+                announcementModal.classList.add('hidden');
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalBtn.addEventListener('click', closeModal);
+
+            // Close add/edit modal when clicking outside
+            announcementModal.addEventListener('click', function(e) {
+                if (e.target === announcementModal) {
+                    closeModal();
+                }
+            });
+
+            // Close view modal
+            function closeViewModal() {
+                viewAnnouncementModal.classList.add('hidden');
+            }
+
+            closeViewModalBtn.addEventListener('click', closeViewModal);
+            closeViewBtn.addEventListener('click', closeViewModal);
+
+            // Close view modal when clicking outside
+            viewAnnouncementModal.addEventListener('click', function(e) {
+                if (e.target === viewAnnouncementModal) {
+                    closeViewModal();
+                }
+            });
+
+            // Form submission
+            announcementForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('announcementId').value;
+                const announcementData = {
+                    title: document.getElementById('announcementTitle').value,
+                    content: document.getElementById('announcementContent').value,
+                    date: document.getElementById('announcementDate').value
+                };
+                
+                if (id) {
+                    // Update existing announcement
+                    updateAnnouncement(parseInt(id), announcementData);
+                } else {
+                    // Add new announcement
+                    addAnnouncement(announcementData);
+                }
+                
+                closeModal();
+                loadAnnouncements();
+            });
+        });
+
+        // Load announcements
+        function loadAnnouncements() {
+            const container = document.getElementById('announcementsContainer');
+            const noAnnouncementsMessage = document.getElementById('noAnnouncementsMessage');
+            const announcements = getAnnouncements();
+            
+            // Clear container except for the no announcements message
+            container.innerHTML = '';
+            container.appendChild(noAnnouncementsMessage);
+            
+            if (announcements.length === 0) {
+                noAnnouncementsMessage.classList.remove('hidden');
+                return;
+            } else {
+                noAnnouncementsMessage.classList.add('hidden');
+            }
+            
+            // Sort announcements by date (newest first)
+            const sortedAnnouncements = announcements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedAnnouncements.forEach(announcement => {
+                const announcementCard = document.createElement('div');
+                announcementCard.className = 'card bg-white rounded-lg shadow-md overflow-hidden';
+                
+                // Create a preview of the content (first 150 characters)
+                const contentPreview = announcement.content.length > 150 ? 
+                    announcement.content.substring(0, 150) + '...' : 
+                    announcement.content;
+                
+                announcementCard.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-bold text-gray-800">${announcement.title}</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="editAnnouncement(${announcement.id})" class="text-blue-600 hover:text-blue-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteAnnouncementItem(${announcement.id})" class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">${formatDate(announcement.date)}</p>
+                        <p class="text-gray-700 mb-4">${contentPreview}</p>
+                        <button onclick="viewAnnouncement(${announcement.id})" class="text-blue-600 hover:text-blue-800 flex items-center">
+                            <span>Detayları Görüntüle</span>
+                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(announcementCard);
+            });
+        }
+
+        // Edit announcement
+        function editAnnouncement(id) {
+            const announcement = getAnnouncement(id);
+            if (!announcement) return;
+            
+            document.getElementById('modalTitle').textContent = 'Duyuru Düzenle';
+            document.getElementById('announcementId').value = announcement.id;
+            document.getElementById('announcementTitle').value = announcement.title;
+            document.getElementById('announcementContent').value = announcement.content;
+            document.getElementById('announcementDate').value = announcement.date;
+            
+            document.getElementById('announcementModal').classList.remove('hidden');
+        }
+
+        // View announcement details
+        function viewAnnouncement(id) {
+            const announcement = getAnnouncement(id);
+            if (!announcement) return;
+            
+            document.getElementById('viewAnnouncementTitle').textContent = announcement.title;
+            document.getElementById('viewAnnouncementDate').textContent = formatDate(announcement.date);
+            
+            // Format the content with line breaks
+            document.getElementById('viewAnnouncementContent').innerHTML = announcement.content.replace(/\n/g, '<br>');
+            
+            document.getElementById('viewAnnouncementModal').classList.remove('hidden');
+        }
+
+        // Delete announcement
+        function deleteAnnouncementItem(id) {
+            if (confirm('Bu duyuruyu silmek istediğinize emin misiniz?')) {
+                deleteAnnouncement(id);
+                loadAnnouncements();
+            }
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('tr-TR', options);
+        }
+    </script>
+</body>
+</html>

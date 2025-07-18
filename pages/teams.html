@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Ekip Listesi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white shadow-md md:w-64 w-full md:min-h-screen md:fixed">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h1 class="text-xl font-bold text-gray-800">Yönetim Paneli</h1>
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="sidebarMenu" class="md:block">
+                <nav class="mt-4">
+                    <ul>
+                        <li>
+                            <a href="dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-home w-6"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="teams.html" class="flex items-center px-4 py-3 bg-blue-50 text-blue-700 border-l-4 border-blue-700">
+                                <i class="fas fa-users w-6"></i>
+                                <span>Ekip Listesi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tasks.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-tasks w-6"></i>
+                                <span>Görev Yönetimi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="daily-logs.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-calendar-day w-6"></i>
+                                <span>Günlük Takip</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="announcements.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-bullhorn w-6"></i>
+                                <span>Duyurular</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt w-6"></i>
+                                <span>Çıkış</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 flex-1 p-4 md:p-8">
+            <div class="mb-6 flex flex-wrap items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Ekip Listesi</h1>
+                    <p class="text-gray-600">Tüm ekip üyelerini yönetin</p>
+                </div>
+                <button id="addTeamBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm flex items-center mt-2 md:mt-0">
+                    <i class="fas fa-plus mr-2"></i> Yeni Ekip Üyesi
+                </button>
+            </div>
+
+            <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                <!-- Team List Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İsim</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alan</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Not</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Team members will be populated here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Team Member Modal -->
+    <div id="teamModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold" id="modalTitle">Ekip Üyesi Ekle</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="teamForm">
+                <input type="hidden" id="memberId">
+                <div class="mb-4">
+                    <label for="memberName" class="form-label">İsim</label>
+                    <input type="text" id="memberName" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="memberRole" class="form-label">Rol</label>
+                    <input type="text" id="memberRole" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="memberField" class="form-label">Alan</label>
+                    <select id="memberField" class="form-select" required>
+                        <option value="">Seçiniz</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Frontend">Frontend</option>
+                        <option value="iOS">iOS</option>
+                        <option value="Android">Android</option>
+                        <option value="QA">QA</option>
+                        <option value="DevOps">DevOps</option>
+                        <option value="Tasarım">Tasarım</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label flex items-center">
+                        <span>Aktif</span>
+                        <label class="toggle-switch ml-2">
+                            <input type="checkbox" id="memberActive" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                </div>
+                <div class="mb-4">
+                    <label for="memberNotes" class="form-label">Not</label>
+                    <textarea id="memberNotes" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="btn-secondary">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar on mobile
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Initialize team data
+            loadTeamMembers();
+
+            // Modal handling
+            const teamModal = document.getElementById('teamModal');
+            const addTeamBtn = document.getElementById('addTeamBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const teamForm = document.getElementById('teamForm');
+            const modalTitle = document.getElementById('modalTitle');
+
+            // Open modal for adding new team member
+            addTeamBtn.addEventListener('click', function() {
+                modalTitle.textContent = 'Ekip Üyesi Ekle';
+                teamForm.reset();
+                document.getElementById('memberId').value = '';
+                document.getElementById('memberActive').checked = true;
+                teamModal.classList.remove('hidden');
+            });
+
+            // Close modal
+            function closeModal() {
+                teamModal.classList.add('hidden');
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            teamModal.addEventListener('click', function(e) {
+                if (e.target === teamModal) {
+                    closeModal();
+                }
+            });
+
+            // Form submission
+            teamForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('memberId').value;
+                const memberData = {
+                    name: document.getElementById('memberName').value,
+                    role: document.getElementById('memberRole').value,
+                    field: document.getElementById('memberField').value,
+                    isActive: document.getElementById('memberActive').checked,
+                    notes: document.getElementById('memberNotes').value
+                };
+                
+                if (id) {
+                    // Update existing member
+                    updateTeamMember(parseInt(id), memberData);
+                } else {
+                    // Add new member
+                    addTeamMember(memberData);
+                }
+                
+                closeModal();
+                loadTeamMembers();
+            });
+        });
+
+        // Load team members into the table
+        function loadTeamMembers() {
+            const tableBody = document.getElementById('teamTableBody');
+            const teams = getTeams();
+            
+            tableBody.innerHTML = '';
+            
+            if (teams.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500 italic">
+                            Henüz ekip üyesi bulunmuyor.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            teams.forEach(member => {
+                const statusBadge = member.isActive ? 
+                    '<span class="badge badge-green">Aktif</span>' : 
+                    '<span class="badge badge-gray">Pasif</span>';
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="font-medium text-gray-900">${member.name}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${member.role}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${member.field}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <label class="toggle-switch">
+                                <input type="checkbox" ${member.isActive ? 'checked' : ''} 
+                                       onchange="toggleStatus(${member.id})">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                            ${member.notes || '-'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <button onclick="editMember(${member.id})" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteMember(${member.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Toggle member status
+        function toggleStatus(id) {
+            toggleTeamMemberStatus(id);
+            loadTeamMembers();
+        }
+
+        // Edit team member
+        function editMember(id) {
+            const member = getTeamMember(id);
+            if (!member) return;
+            
+            document.getElementById('modalTitle').textContent = 'Ekip Üyesi Düzenle';
+            document.getElementById('memberId').value = member.id;
+            document.getElementById('memberName').value = member.name;
+            document.getElementById('memberRole').value = member.role;
+            document.getElementById('memberField').value = member.field;
+            document.getElementById('memberActive').checked = member.isActive;
+            document.getElementById('memberNotes').value = member.notes || '';
+            
+            document.getElementById('teamModal').classList.remove('hidden');
+        }
+
+        // Delete team member
+        function deleteMember(id) {
+            if (confirm('Bu ekip üyesini silmek istediğinize emin misiniz?')) {
+                deleteTeamMember(id);
+                loadTeamMembers();
+            }
+        }
+    </script>
+</body>
+</html>

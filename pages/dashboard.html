@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Ana Sayfa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white shadow-md md:w-64 w-full md:min-h-screen md:fixed">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h1 class="text-xl font-bold text-gray-800">Yönetim Paneli</h1>
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="sidebarMenu" class="md:block">
+                <nav class="mt-4">
+                    <ul>
+                        <li>
+                            <a href="dashboard.html" class="flex items-center px-4 py-3 bg-blue-50 text-blue-700 border-l-4 border-blue-700">
+                                <i class="fas fa-home w-6"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="teams.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-users w-6"></i>
+                                <span>Ekip Listesi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tasks.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-tasks w-6"></i>
+                                <span>Görev Yönetimi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="daily-logs.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-calendar-day w-6"></i>
+                                <span>Günlük Takip</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="announcements.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                                <i class="fas fa-bullhorn w-6"></i>
+                                <span>Duyurular</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt w-6"></i>
+                                <span>Çıkış</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 flex-1 p-4 md:p-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Hoş Geldiniz</h1>
+                <p class="text-gray-600">Yönetim Paneline hoş geldiniz. Aşağıdaki özet bilgileri inceleyebilirsiniz.</p>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 mr-4">
+                            <i class="fas fa-users text-blue-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Aktif Ekip Üyesi</p>
+                            <h2 class="text-2xl font-bold" id="activeTeamCount">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 mr-4">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Tamamlanan Görevler</p>
+                            <h2 class="text-2xl font-bold" id="completedTaskCount">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                            <i class="fas fa-clock text-yellow-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Bekleyen Görevler</p>
+                            <h2 class="text-2xl font-bold" id="pendingTaskCount">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Items -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Recent Tasks -->
+                <div class="card bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Son Görevler</h3>
+                        <a href="tasks.html" class="text-blue-600 hover:text-blue-800 text-sm">Tümünü Gör</a>
+                    </div>
+                    <div id="recentTasksList" class="space-y-3">
+                        <!-- Tasks will be populated by JS -->
+                        <p class="text-gray-500 italic text-sm">Henüz görev bulunmuyor.</p>
+                    </div>
+                </div>
+
+                <!-- Recent Announcements -->
+                <div class="card bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Son Duyurular</h3>
+                        <a href="announcements.html" class="text-blue-600 hover:text-blue-800 text-sm">Tümünü Gör</a>
+                    </div>
+                    <div id="recentAnnouncementsList" class="space-y-3">
+                        <!-- Announcements will be populated by JS -->
+                        <p class="text-gray-500 italic text-sm">Henüz duyuru bulunmuyor.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar on mobile
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Initialize dashboard data
+            updateDashboardStats();
+            displayRecentTasks();
+            displayRecentAnnouncements();
+        });
+
+        function updateDashboardStats() {
+            // Get data
+            const teams = getTeams();
+            const tasks = getTasks();
+            
+            // Update counters
+            document.getElementById('activeTeamCount').textContent = teams.filter(member => member.isActive).length;
+            document.getElementById('completedTaskCount').textContent = tasks.filter(task => task.status === 'Bitti').length;
+            document.getElementById('pendingTaskCount').textContent = tasks.filter(task => task.status === 'Bekliyor').length;
+        }
+
+        function displayRecentTasks() {
+            const tasks = getTasks();
+            const recentTasksList = document.getElementById('recentTasksList');
+            
+            if (tasks.length > 0) {
+                recentTasksList.innerHTML = '';
+                
+                // Display last 5 tasks
+                tasks.slice(0, 5).forEach(task => {
+                    const statusClass = task.status === 'Bekliyor' ? 'status-waiting' : 
+                                     task.status === 'Yapılıyor' ? 'status-inprogress' : 
+                                     'status-completed';
+                    
+                    recentTasksList.innerHTML += `
+                        <div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+                            <div>
+                                <h4 class="font-medium text-gray-800">${task.name}</h4>
+                                <p class="text-xs text-gray-500">${task.assignedTo}</p>
+                            </div>
+                            <span class="badge ${statusClass}">${task.status}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function displayRecentAnnouncements() {
+            const announcements = getAnnouncements();
+            const recentAnnouncementsList = document.getElementById('recentAnnouncementsList');
+            
+            if (announcements.length > 0) {
+                recentAnnouncementsList.innerHTML = '';
+                
+                // Display last 5 announcements
+                announcements.slice(0, 5).forEach(announcement => {
+                    recentAnnouncementsList.innerHTML += `
+                        <div class="p-2 hover:bg-gray-50 rounded">
+                            <h4 class="font-medium text-gray-800">${announcement.title}</h4>
+                            <p class="text-xs text-gray-500">${formatDate(announcement.date)}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('tr-TR', options);
+        }
+    </script>
+</body>
+</html>
