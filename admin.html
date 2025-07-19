@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Admin Authentication Check -->
+    <script src="js/admin-auth.js"></script>
+    
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-cog mr-2 text-red-600"></i>
+                        Admin Paneli
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">
+                        <i class="fas fa-user-shield mr-1"></i>
+                        Admin
+                    </span>
+                    <button id="adminLogoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Çıkış Yap
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 px-6">
+                    <button id="dashboardTab" class="tab-button active border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
+                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        Dashboard
+                    </button>
+                    <button id="teamTab" class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i class="fas fa-users mr-2"></i>
+                        Ekip Üyeleri
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="tab-content">
+            <!-- Admin Controls -->
+            <div class="bg-white rounded-lg shadow mb-8">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-tools text-blue-600 mr-2"></i>
+                        Yönetim Araçları
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <button id="addAnnouncementBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-bullhorn mr-2"></i>
+                            Duyuru Ekle
+                        </button>
+                        <button id="addTaskBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-tasks mr-2"></i>
+                            Görev Ekle
+                        </button>
+                        <button id="addLogBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-calendar-day mr-2"></i>
+                            Günlük Kayıt Ekle
+                        </button>
+                        <button id="assignTaskBtn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-user-plus mr-2"></i>
+                            Görev Ata
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <i class="fas fa-bullhorn text-blue-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Toplam Duyuru</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="adminTotalAnnouncements">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <i class="fas fa-tasks text-green-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Toplam Görev</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="adminTotalTasks">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <i class="fas fa-calendar-day text-purple-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Günlük Kayıt</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="adminTotalLogs">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Management -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Duyurular -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-bullhorn text-blue-600 mr-2"></i>
+                        Duyurular
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div id="adminAnnouncementsList" class="space-y-4">
+                        <!-- Duyurular buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Görevler -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-tasks text-green-600 mr-2"></i>
+                        Görevler
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div id="adminTasksList" class="space-y-4">
+                        <!-- Görevler buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Günlük Kayıtlar -->
+            <div class="mt-8 bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-calendar-day text-purple-600 mr-2"></i>
+                        Günlük Kayıtlar
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div id="adminLogsList" class="space-y-4">
+                        <!-- Günlük kayıtlar buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Members Content -->
+        <div id="teamContent" class="tab-content hidden">
+            <!-- Team Management Controls -->
+            <div class="bg-white rounded-lg shadow mb-8">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-medium text-gray-900">
+                            <i class="fas fa-users text-blue-600 mr-2"></i>
+                            Ekip Üyeleri Yönetimi
+                        </h2>
+                        <div class="flex space-x-3">
+                            <button id="copyEmailsBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-copy mr-2"></i>
+                                E-postaları Kopyala
+                            </button>
+                            <button id="addMemberBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Üye Ekle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <!-- Filter Controls -->
+                    <div class="mb-6 flex flex-wrap gap-4">
+                        <select id="areaFilter" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                            <option value="">Tüm Alanlar</option>
+                            <option value="iOS">iOS</option>
+                            <option value="Android">Android</option>
+                            <option value="Backend">Backend</option>
+                            <option value="Frontend">Frontend</option>
+                            <option value="Tasarım">Tasarım</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="QA">QA</option>
+                        </select>
+                        <input type="text" id="searchMembers" placeholder="Üye ara..." class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                    </div>
+                    
+                    <!-- Team Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-blue-600 text-xl mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-blue-600 font-medium">Toplam Üye</p>
+                                    <p class="text-2xl font-bold text-blue-800" id="totalMembers">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-code text-green-600 text-xl mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-green-600 font-medium">Geliştirici</p>
+                                    <p class="text-2xl font-bold text-green-800" id="totalDevelopers">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-palette text-purple-600 text-xl mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-purple-600 font-medium">Tasarımcı</p>
+                                    <p class="text-2xl font-bold text-purple-800" id="totalDesigners">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-orange-50 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-tasks text-orange-600 text-xl mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-orange-600 font-medium">Atanmış Görev</p>
+                                    <p class="text-2xl font-bold text-orange-800" id="totalAssignedTasks">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Members Table -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-table text-gray-600 mr-2"></i>
+                        Ekip Üyeleri Listesi
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad Soyad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Görev</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alan</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-posta</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atanmış Görevler</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Üyeler buraya yüklenecek -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noMembersMessage" class="p-8 text-center text-gray-500 hidden">
+                    <i class="fas fa-users text-4xl mb-4 opacity-50"></i>
+                    <p>Henüz ekip üyesi eklenmemiş.</p>
+                </div>
+            </div>
+
+            <!-- Assigned Tasks Section -->
+            <div class="mt-8 bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-user-check text-green-600 mr-2"></i>
+                        Atanmış Görevler
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <div id="assignedTasksList" class="space-y-4">
+                        <!-- Atanmış görevler buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Adding Content -->
+    <div id="contentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 id="modalTitle" class="text-lg font-medium text-gray-900">İçerik Ekle</h3>
+            </div>
+            <form id="contentForm" class="p-6 space-y-4">
+                <div>
+                    <label for="contentTitle" class="block text-sm font-medium text-gray-700">Başlık</label>
+                    <input type="text" id="contentTitle" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="contentDescription" class="block text-sm font-medium text-gray-700">Açıklama</label>
+                    <textarea id="contentDescription" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                </div>
+                <div id="priorityField" class="hidden">
+                    <label for="contentPriority" class="block text-sm font-medium text-gray-700">Öncelik</label>
+                    <select id="contentPriority" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="low">Düşük</option>
+                        <option value="medium">Orta</option>
+                        <option value="high">Yüksek</option>
+                    </select>
+                </div>
+                <div id="statusField" class="hidden">
+                    <label for="contentStatus" class="block text-sm font-medium text-gray-700">Durum</label>
+                    <select id="contentStatus" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="pending">Bekliyor</option>
+                        <option value="in-progress">Devam Ediyor</option>
+                        <option value="completed">Tamamlandı</option>
+                    </select>
+                </div>
+                <div id="categoryField" class="hidden">
+                    <label for="contentCategory" class="block text-sm font-medium text-gray-700">Kategori</label>
+                    <select id="contentCategory" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="general">Genel</option>
+                        <option value="meeting">Toplantı</option>
+                        <option value="task">Görev</option>
+                        <option value="note">Not</option>
+                        <option value="reminder">Hatırlatma</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelModal" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700">
+                        Ekle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Team Member -->
+    <div id="memberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 id="memberModalTitle" class="text-lg font-medium text-gray-900">Ekip Üyesi Ekle</h3>
+            </div>
+            <form id="memberForm" class="p-6 space-y-4">
+                <div>
+                    <label for="memberName" class="block text-sm font-medium text-gray-700">Ad Soyad</label>
+                    <input type="text" id="memberName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="memberRole" class="block text-sm font-medium text-gray-700">Görev</label>
+                    <input type="text" id="memberRole" placeholder="örn: Mobil Geliştirici, Veri Uzmanı" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="memberArea" class="block text-sm font-medium text-gray-700">Alan</label>
+                    <select id="memberArea" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Alan Seçin</option>
+                        <option value="iOS">iOS</option>
+                        <option value="Android">Android</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Frontend">Frontend</option>
+                        <option value="Tasarım">Tasarım</option>
+                        <option value="DevOps">DevOps</option>
+                        <option value="QA">QA</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="memberEmail" class="block text-sm font-medium text-gray-700">E-posta Adresi</label>
+                    <input type="email" id="memberEmail" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelMemberModal" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700">
+                        Ekle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Assigning Task -->
+    <div id="assignTaskModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Görev Ata</h3>
+            </div>
+            <form id="assignTaskForm" class="p-6 space-y-4">
+                <div>
+                    <label for="assignTaskTitle" class="block text-sm font-medium text-gray-700">Görev Başlığı</label>
+                    <input type="text" id="assignTaskTitle" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="assignTaskDescription" class="block text-sm font-medium text-gray-700">Açıklama</label>
+                    <textarea id="assignTaskDescription" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                </div>
+                <div>
+                    <label for="assignTaskMember" class="block text-sm font-medium text-gray-700">Kime Atandı</label>
+                    <select id="assignTaskMember" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Üye Seçin</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="assignTaskArea" class="block text-sm font-medium text-gray-700">Alan</label>
+                    <select id="assignTaskArea" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Alan Seçin</option>
+                        <option value="iOS">iOS</option>
+                        <option value="Android">Android</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Frontend">Frontend</option>
+                        <option value="Tasarım">Tasarım</option>
+                        <option value="DevOps">DevOps</option>
+                        <option value="QA">QA</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="assignTaskDueDate" class="block text-sm font-medium text-gray-700">Teslim Tarihi</label>
+                    <input type="datetime-local" id="assignTaskDueDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="assignTaskPriority" class="block text-sm font-medium text-gray-700">Öncelik</label>
+                    <select id="assignTaskPriority" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="low">Düşük</option>
+                        <option value="medium">Orta</option>
+                        <option value="high">Yüksek</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelAssignTaskModal" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-orange-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-orange-700">
+                        Ata
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

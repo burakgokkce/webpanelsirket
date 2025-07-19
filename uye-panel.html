@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üye Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-users mr-2 text-blue-600"></i>
+                        Üye Paneli
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">
+                        <i class="fas fa-user mr-1"></i>
+                        Hoş geldin, <span id="memberName">admin</span>
+                    </span>
+                    <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Çıkış Yap
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Info Banner -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+            <div class="flex items-center">
+                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                <p class="text-blue-800 text-sm">
+                    Bu panel sadece görüntüleme amaçlıdır. Herhangi bir değişiklik yapamazsınız.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <i class="fas fa-bullhorn text-blue-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Toplam Duyuru</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalAnnouncements">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <i class="fas fa-tasks text-green-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Toplam Görev</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalTasks">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <i class="fas fa-calendar-day text-purple-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Günlük Kayıt</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalLogs">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Duyurular -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-bullhorn text-blue-600 mr-2"></i>
+                        Duyurular
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div id="announcementsList" class="space-y-4">
+                        <!-- Duyurular buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Görevler -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-tasks text-green-600 mr-2"></i>
+                        Görevler
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div id="tasksList" class="space-y-4">
+                        <!-- Görevler buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Günlük Kayıtlar -->
+        <div class="mt-8 bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">
+                    <i class="fas fa-calendar-day text-purple-600 mr-2"></i>
+                    Günlük Kayıtlar
+                </h2>
+            </div>
+            <div class="p-6">
+                <div id="logsList" class="space-y-4">
+                    <!-- Günlük kayıtlar buraya yüklenecek -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/uye.js"></script>
+</body>
+</html>
