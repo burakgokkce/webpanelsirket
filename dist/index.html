@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Giriş</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+  <link rel="stylesheet" href="./assets/index-65260032.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Yönetim Paneli</h1>
+            <p class="text-gray-600">Lütfen devam etmek için şifrenizi girin</p>
+        </div>
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Şifre</label>
+                <div class="mt-1 relative">
+                    <input type="password" id="password" name="password" 
+                           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
+                           focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                           required>
+                    <span id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+                        <i class="far fa-eye text-gray-400 hover:text-gray-600"></i>
+                    </span>
+                </div>
+            </div>
+            <div id="errorMessage" class="text-red-500 text-sm hidden">
+                Yanlış şifre! Lütfen tekrar deneyin.
+            </div>
+            <div>
+                <button type="submit" 
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Giriş Yap
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>
