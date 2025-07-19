@@ -374,19 +374,16 @@
         function loadTeamMembersForSelects() {
             const userFilter = document.getElementById('userFilter');
             const logUser = document.getElementById('logUser');
-            const teams = getTeams();
-            
+            const members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
             // Clear existing options except the first one
             userFilter.innerHTML = '<option value="">Tümü</option>';
             logUser.innerHTML = '<option value="">Seçiniz</option>';
-            
             // Add all team members to filters
-            teams.forEach(member => {
+            members.forEach(member => {
                 const filterOption = document.createElement('option');
                 filterOption.value = member.name;
                 filterOption.textContent = member.name;
                 userFilter.appendChild(filterOption);
-                
                 const logOption = document.createElement('option');
                 logOption.value = member.name;
                 logOption.textContent = member.name;

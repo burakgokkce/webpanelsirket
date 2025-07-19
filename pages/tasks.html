@@ -344,13 +344,11 @@
         // Load team members for select dropdown
         function loadTeamMembersForSelect() {
             const selectElement = document.getElementById('taskAssignee');
-            const teams = getTeams();
-            
+            const members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
             // Clear existing options except the first one
             selectElement.innerHTML = '<option value="">Seçiniz</option>';
-            
             // Add active team members to select
-            teams.filter(member => member.isActive).forEach(member => {
+            members.filter(member => member.isActive !== false).forEach(member => {
                 const option = document.createElement('option');
                 option.value = member.name;
                 option.textContent = member.name;

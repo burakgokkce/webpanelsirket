@@ -160,11 +160,11 @@
 
         function updateDashboardStats() {
             // Get data
-            const teams = getTeams();
+            const members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
             const tasks = getTasks();
             
             // Update counters
-            document.getElementById('activeTeamCount').textContent = teams.filter(member => member.isActive).length;
+            document.getElementById('activeTeamCount').textContent = members.filter(member => member.isActive !== false).length;
             document.getElementById('completedTaskCount').textContent = tasks.filter(task => task.status === 'Bitti').length;
             document.getElementById('pendingTaskCount').textContent = tasks.filter(task => task.status === 'Bekliyor').length;
         }

@@ -3,14 +3,6 @@
 
 // Initialize default data if not exists
 function initializeData() {
-    if (!localStorage.getItem('teams')) {
-        localStorage.setItem('teams', JSON.stringify([
-            { id: 1, name: 'Ahmet Yılmaz', role: 'Takım Lideri', field: 'Backend', isActive: true, notes: 'Yeni API geliştirmesinde çalışıyor.' },
-            { id: 2, name: 'Ayşe Demir', role: 'Kıdemli Geliştirici', field: 'iOS', isActive: true, notes: '' },
-            { id: 3, name: 'Mehmet Kaya', role: 'Geliştirici', field: 'Android', isActive: true, notes: '' }
-        ]));
-    }
-
     if (!localStorage.getItem('tasks')) {
         localStorage.setItem('tasks', JSON.stringify([
             { id: 1, name: 'API Geliştirmesi', description: 'Yeni kullanıcı yönetimi API geliştirmesi', assignedTo: 'Ahmet Yılmaz', dueDate: '2025-08-01', status: 'Yapılıyor' },
@@ -37,62 +29,6 @@ function initializeData() {
 
 // Initialize data on script load
 initializeData();
-
-// Teams Management
-function getTeams() {
-    return JSON.parse(localStorage.getItem('teams')) || [];
-}
-
-function getTeamMember(id) {
-    const teams = getTeams();
-    return teams.find(member => member.id === id);
-}
-
-function addTeamMember(memberData) {
-    const teams = getTeams();
-    
-    // Generate new ID
-    const maxId = teams.length > 0 ? Math.max(...teams.map(m => m.id)) : 0;
-    memberData.id = maxId + 1;
-    
-    teams.push(memberData);
-    localStorage.setItem('teams', JSON.stringify(teams));
-    return memberData;
-}
-
-function updateTeamMember(id, updatedData) {
-    let teams = getTeams();
-    const index = teams.findIndex(member => member.id === id);
-    
-    if (index !== -1) {
-        teams[index] = { ...teams[index], ...updatedData };
-        localStorage.setItem('teams', JSON.stringify(teams));
-        return teams[index];
-    }
-    
-    return null;
-}
-
-function deleteTeamMember(id) {
-    let teams = getTeams();
-    const filteredTeams = teams.filter(member => member.id !== id);
-    
-    localStorage.setItem('teams', JSON.stringify(filteredTeams));
-    return filteredTeams.length < teams.length;
-}
-
-function toggleTeamMemberStatus(id) {
-    let teams = getTeams();
-    const index = teams.findIndex(member => member.id === id);
-    
-    if (index !== -1) {
-        teams[index].isActive = !teams[index].isActive;
-        localStorage.setItem('teams', JSON.stringify(teams));
-        return teams[index];
-    }
-    
-    return null;
-}
 
 // Tasks Management
 function getTasks() {
@@ -135,6 +71,7 @@ function deleteTask(id) {
     
     localStorage.setItem('tasks', JSON.stringify(filteredTasks));
     return filteredTasks.length < tasks.length;
+    
 }
 
 function getTasksByStatus(status) {
@@ -206,3 +143,5 @@ function deleteAnnouncement(id) {
     localStorage.setItem('announcements', JSON.stringify(filteredAnnouncements));
     return filteredAnnouncements.length < announcements.length;
 }
+
+ 

@@ -234,11 +234,11 @@
         // Load team members into the table
         function loadTeamMembers() {
             const tableBody = document.getElementById('teamTableBody');
-            const teams = getTeams();
+            const members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
             
             tableBody.innerHTML = '';
             
-            if (teams.length === 0) {
+            if (members.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="6" class="px-6 py-4 text-center text-gray-500 italic">
@@ -249,7 +249,7 @@
                 return;
             }
             
-            teams.forEach(member => {
+            members.forEach(member => {
                 const statusBadge = member.isActive ? 
                     '<span class="badge badge-green">Aktif</span>' : 
                     '<span class="badge badge-gray">Pasif</span>';
@@ -263,12 +263,12 @@
                             ${member.role}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${member.field}
+                            ${member.area || member.field || ''}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <label class="toggle-switch">
                                 <input type="checkbox" ${member.isActive ? 'checked' : ''} 
-                                       onchange="toggleStatus(${member.id})">
+                                       onchange="toggleStatus('${member.id}')">
                                 <span class="toggle-slider"></span>
                             </label>
                         </td>
@@ -276,10 +276,10 @@
                             ${member.notes || '-'}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            <button onclick="editMember(${member.id})" class="text-blue-600 hover:text-blue-900 mr-3">
+                            <button onclick="editMember('${member.id}')" class="text-blue-600 hover:text-blue-900 mr-3">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteMember(${member.id})" class="text-red-600 hover:text-red-900">
+                            <button onclick="deleteMember('${member.id}')" class="text-red-600 hover:text-red-900">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -290,30 +290,36 @@
 
         // Toggle member status
         function toggleStatus(id) {
-            toggleTeamMemberStatus(id);
+            const members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+            const index = members.findIndex(m => m.id === id);
+            if (index !== -1) {
+                members[index].isActive = !members[index].isActive;
+                localStorage.setItem('teamMembers', JSON.stringify(members));
+            }
             loadTeamMembers();
         }
 
         // Edit team member
         function editMember(id) {
-            const member = getTeamMember(id);
+            const members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+            const member = members.find(m => m.id === id);
             if (!member) return;
-            
             document.getElementById('modalTitle').textContent = 'Ekip Üyesi Düzenle';
             document.getElementById('memberId').value = member.id;
             document.getElementById('memberName').value = member.name;
             document.getElementById('memberRole').value = member.role;
-            document.getElementById('memberField').value = member.field;
-            document.getElementById('memberActive').checked = member.isActive;
+            document.getElementById('memberField').value = member.area || member.field || '';
+            document.getElementById('memberActive').checked = member.isActive !== false;
             document.getElementById('memberNotes').value = member.notes || '';
-            
             document.getElementById('teamModal').classList.remove('hidden');
         }
 
         // Delete team member
         function deleteMember(id) {
             if (confirm('Bu ekip üyesini silmek istediğinize emin misiniz?')) {
-                deleteTeamMember(id);
+                let members = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+                members = members.filter(m => m.id !== id);
+                localStorage.setItem('teamMembers', JSON.stringify(members));
                 loadTeamMembers();
             }
         }
