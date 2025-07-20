@@ -222,6 +222,40 @@ document.addEventListener('DOMContentLoaded', function() {
     function broadcastDataUpdate() {
         // LocalStorage değişikliğini diğer sekmelere bildir
         localStorage.setItem('dataUpdated', Date.now().toString());
+        
+        // Aynı sekmedeki diğer bileşenleri de güncelle
+        setTimeout(() => {
+            loadTeamData();
+            loadAdminData();
+            filterMembers();
+        }, 100);
+    }
+    
+    // Storage değişikliklerini dinle (sekmeler arası güncelleme)
+    function setupStorageListener() {
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'dataUpdated' || e.key === 'assignedTasks' || e.key === 'teamMembers') {
+                console.log('Storage change detected:', e.key);
+                setTimeout(() => {
+                    loadTeamData();
+                    loadAdminData();
+                    filterMembers();
+                }, 100);
+            }
+        });
+        
+        // Aynı sekme içindeki değişiklikleri de dinle
+        const originalSetItem = localStorage.setItem;
+        localStorage.setItem = function(key, value) {
+            originalSetItem.apply(this, arguments);
+            if (key === 'assignedTasks' || key === 'teamMembers') {
+                setTimeout(() => {
+                    loadTeamData();
+                    loadAdminData();
+                    filterMembers();
+                }, 50);
+            }
+        };
     }
     
     function loadAdminData() {
@@ -370,22 +404,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sayfa yüklendiğinde verileri yükle
     loadAdminData();
     loadTeamData();
-
-    // Diğer sekmelerde localStorage değişikliği olursa üyeleri güncelle
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'teamMembers' || e.key === 'dataUpdated') {
-            loadTeamData();
-        }
-    });
-
-    // Aynı sekmede localStorage güncellendiğinde (ör: başka bir fonksiyon setItem çağırdıysa) düzenli kontrol
-    setInterval(function() {
-        const lastUpdate = localStorage.getItem('dataUpdated');
-        if (lastUpdate && lastUpdate !== window.lastKnownUpdate) {
-            window.lastKnownUpdate = lastUpdate;
-            loadTeamData();
-        }
-    }, 3000);
+    
+    // Gerçek zamanlı güncelleme sistemini başlat
+    setupStorageListener();
+    
+    // İlk yükleme için window.lastKnownUpdate'i ayarla
+    window.lastKnownUpdate = localStorage.getItem('dataUpdated');
     
     // Tab switching functions
     function switchTab(tab) {

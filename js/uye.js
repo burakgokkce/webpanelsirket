@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Gerçek zamanlı güncelleme için localStorage değişikliklerini dinle
     window.addEventListener('storage', function(e) {
-        if (e.key === 'announcements' || e.key === 'tasks' || e.key === 'logs' || e.key === 'dataUpdated') {
+        if (e.key === 'announcements' || e.key === 'tasks' || e.key === 'assignedTasks' || e.key === 'logs' || e.key === 'dataUpdated') {
+            console.log('Storage change detected in member panel:', e.key);
             loadData();
         }
     });
@@ -44,18 +45,22 @@ function loadData() {
     // LocalStorage'dan verileri oku (sadece okuma modu)
     const announcements = JSON.parse(localStorage.getItem('announcements') || '[]');
     const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    const assignedTasks = JSON.parse(localStorage.getItem('assignedTasks') || '[]');
     const logs = JSON.parse(localStorage.getItem('logs') || '[]');
+
+    // Tüm görevleri birleştir (hem genel görevler hem de atanan görevler)
+    const allTasks = [...tasks, ...assignedTasks];
 
     // İstatistikleri güncelle
     document.getElementById('totalAnnouncements').textContent = announcements.length;
-    document.getElementById('totalTasks').textContent = tasks.length;
+    document.getElementById('totalTasks').textContent = allTasks.length;
     document.getElementById('totalLogs').textContent = logs.length;
 
     // Duyuruları göster
     displayAnnouncements(announcements);
     
-    // Görevleri göster
-    displayTasks(tasks);
+    // Tüm görevleri göster (hem genel hem atanan)
+    displayTasks(allTasks);
     
     // Günlük kayıtları göster
     displayLogs(logs);
@@ -111,33 +116,48 @@ function displayTasks(tasks) {
         return;
     }
 
-    container.innerHTML = tasks.map(task => `
+    container.innerHTML = tasks.map(task => {
+        // Hem tasks hem assignedTasks formatlarını destekle
+        const title = task.title || task.name || 'Görev';
+        const description = task.description || task.content || '';
+        const taskDate = task.date || task.createdAt || new Date().toISOString();
+        const assignedTo = task.assignedTo ? `
+            <span class="mx-2">•</span>
+            <i class="fas fa-user mr-1"></i>
+            <span>Atanan: ${escapeHtml(task.assignedTo)}</span>
+        ` : '';
+        
+        return `
         <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
-                    <h3 class="font-medium text-gray-900 mb-2">${escapeHtml(task.title)}</h3>
-                    <p class="text-gray-600 text-sm mb-3">${escapeHtml(task.description)}</p>
+                    <h3 class="font-medium text-gray-900 mb-2">${escapeHtml(title)}</h3>
+                    <p class="text-gray-600 text-sm mb-3">${escapeHtml(description)}</p>
                     <div class="flex items-center text-xs text-gray-500">
                         <i class="fas fa-calendar mr-1"></i>
-                        <span>${formatDate(task.date)}</span>
+                        <span>${formatDate(taskDate)}</span>
                         ${task.dueDate ? `
                             <span class="mx-2">•</span>
                             <i class="fas fa-clock mr-1"></i>
                             <span>Bitiş: ${formatDate(task.dueDate)}</span>
                         ` : ''}
+                        ${assignedTo}
                     </div>
                 </div>
                 <div class="ml-4 flex flex-col items-end space-y-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(task.status)}">
                         ${getStatusText(task.status)}
                     </span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityClass(task.priority)}">
-                        ${getPriorityText(task.priority)}
-                    </span>
+                    ${task.priority ? `
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityClass(task.priority)}">
+                            ${getPriorityText(task.priority)}
+                        </span>
+                    ` : ''}
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function displayLogs(logs) {
